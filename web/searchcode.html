@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>代号修改</title>
+
+<link rel="stylesheet" type="text/css" href="css/w3.css">
+<link rel="stylesheet" type="text/css" href="css/search.css">
+<script type="text/javascript" src="js/search.js"></script>
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="/" id="slideDraft">初稿</a>
+  <a href="/final" id="slideFinal">终稿</a>
+  <a href="/searchcode" id="slideSearchCode">修改</a>
+</div>
+
+<div align="center">
+<form name="jobForm">
+	代号： <input type="text" id="supplierCode" onkeyup="supplierSearch(this.value)"></input>
+	名称：<input type="text" id="supplierValue"></input>
+	<input type="button" class="button" value="修改" onclick ="supplierCodeUpdate()" ></input>
+</form>
+</div>
+<br>
+
+<div class="div1" >
+<p id="returnMessage"></p>
+<table id="displaySearchResult"></table>
+<p id="displaySearchError"></p>
+</div>
+</body>
+
+<footer id="footer">
+<p>© Copyright SMC Tech 2020, All Rights Reserved. Powered by <a href="mailto:bafelem@gmail.com">SMC.</a></p>
+</footer>
+</html>

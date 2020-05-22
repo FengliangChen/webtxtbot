@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>txtbot webservice</title>
+<!-- <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script> -->
+<script type="text/javascript" src="js/txtfunc.js"></script>
+<script>
+</script>
+<link rel="stylesheet" type="text/css" href="css/txtbot.css">
+<link rel="stylesheet" type="text/css" href="css/w3.css">
+<link rel="icon" type="image/png" href="image/favicon-32x32.png" sizes="32x32">
+<style>
+</style>
+</head>
+<body>
+<h1 align="center">TXTBOT WEBSERVICE</h1>
+
+<div id="mySidenav" class="sidenav">
+  <a href="/" id="slideDraft">初稿</a>
+  <a href="/final" id="slideFinal">终稿</a>
+  <a href="/searchcode" id="slideSearchCode">修改</a>
+</div>
+
+
+<div align="center" >
+<form name="jobForm">
+	工单号: <input pattern="[0-9]{4}[0-9A-Za-z]{2}" type="text" id="job"></input>
+	<input type="button" value="提交" onclick ="validateForm()" class ="w3-button w3-green" ></input>
+</form>
+</div>
+<br>
+
+<div align="center">
+<label class="switch">
+<input type="checkbox" id="rvstCheck">
+<span class="slider"></span>
+</label>
+</div>
+<div align="center">
+<input type="button" class="button" value="Proof" onclick ="ProofTxtOutput()" ></input>
+<input type="button" class="button" value="Final" onclick ="FinalProofTxtOutput()" ></input>
+</div>
+<br>
+<div class="div1" id="txtdv" >
+<!-- <p ><span style="white-space: pre-line" id="txtHint"></span></p> -->
+<!-- <p style="white-space: pre-line;" id="txtHint"></p> -->
+</div>
+
+<div>
+<footer id="footer">
+<p>© Copyright SMC Tech 2020, All Rights Reserved. Powered by <a href="mailto:bafelem@gmail.com">SMC.</a></p>
+</footer>
+</div>
+</body>
+
+</html>
