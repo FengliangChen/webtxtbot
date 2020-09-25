@@ -25,8 +25,8 @@
 
 
 <div align="center" >
-<form name="jobForm">
-	工单号: <input pattern="[0-9]{4}[0-9A-Za-z]{2}" type="text" id="finalArtworkInput"></input>
+<form name="jobForm" onSubmit="return false;">
+	工单号: <input pattern="[0-9]{4}[0-9A-Za-z]{2}" type="text" id="finalArtworkInput" onkeydown="return finalProcessByKey(event)"></input>
 	<input type="button" value="提交" class ="w3-button w3-green" onclick ="FinalArtwork()" ></input>
 </form>
 </div>

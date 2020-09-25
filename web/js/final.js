@@ -1,6 +1,13 @@
 var finalartworkObj;
 var previousInput
 
+function finalProcessByKey(event) {
+	var x = event.key;
+	if (x == "Enter"){
+		FinalArtwork();
+	}
+}
+
 function FinalArtwork(){
 	var job = document.getElementById("finalArtworkInput").value;
 	if (job == null || job == ""){

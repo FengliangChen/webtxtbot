@@ -9,6 +9,13 @@ function rvstCheck(){
 	}
 }
 
+function jobProcess(event) {
+	var x = event.key;
+	if (x == "Enter"){
+		validateForm();
+	}
+}
+
 function validateForm(){
 	obj = null
 
