@@ -2,7 +2,7 @@ package txtbot
 
 import (
 	"errors"
-	"github.com/extrame/xls"
+	"github.com/sergeilem/xls"
 	"github.com/tealeg/xlsx"
 )
 
@@ -23,10 +23,13 @@ func ParseXls(path string) (string, error) {
 
 func ParseXlsx(path string) (string, error) {
 	if xlFile, err := xlsx.OpenFile(path); err == nil {
-		brand = xlFile.Sheets[0].Rows[2].Cells[1].Value
+		firstSheet := xlFile.Sheets[0]
+		brandCell, _ := firstSheet.Cell(2, 1)
+		brand = brandCell.Value
 		xlsContent := ""
 		for i := 4; i < 12; i++ {
-			xlsContent = xlsContent + xlFile.Sheets[0].Rows[i].Cells[7].Value + "\n"
+			tempCell, _ := firstSheet.Cell(i, 7)
+			xlsContent = xlsContent + tempCell.Value + "\n"
 		}
 		return xlsContent, nil
 	}
