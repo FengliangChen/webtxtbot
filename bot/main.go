@@ -36,25 +36,29 @@ var (
 	rvst = false
 )
 
-
 type TxtJson struct {
-	PHQ string
+	PHQ       string
 	TxtBodies []TxtBody
 }
 
 type TxtBody struct {
 	TxtCount int
-	TxtBody string
-
+	TxtBody  string
 }
 
-func Run(queryJob string, rv bool) string{
-	rvst = rv //cancle some process.
+func ReNewTime() {
+	now = time.Now()
+	today = now.Format("0102")
+	yesterday = now.AddDate(0, 0, -1).Format("0102")
+	month = now.Format("200601")
+}
 
+func Run(queryJob string, rv bool) string {
+	rvst = rv //cancle some process.
 	if !TestConnect() {
 		return "Connection Errors, Please check if the server is connected at: " + dfpath
 	}
-	
+
 	if len(queryJob) != 6 {
 		return "Please input 6 digits"
 	}
@@ -63,6 +67,8 @@ func Run(queryJob string, rv bool) string{
 	job = strings.ToUpper(job)
 
 	re = regexp.MustCompile(job)
+
+	ReNewTime() // fix time if time changed.
 
 	DFjobpath, err := FetchJobPath()
 	if err != nil {
@@ -114,9 +120,9 @@ func Run(queryJob string, rv bool) string{
 
 	b, err := json.Marshal(emailTxtJson)
 	if err != nil {
-        return err.Error()
-    }
-    emailTxt := string(b)
+		return err.Error()
+	}
+	emailTxt := string(b)
 
 	if true {
 		cmd := exec.Command("open", DFjobpath)
@@ -205,7 +211,9 @@ func FetchJobPath() (string, error) {
 }
 
 func FetchPFpath() (string, error) {
-	if rvst {return "",nil}
+	if rvst {
+		return "", nil
+	}
 	jobpath, err := SearchJob(wks)
 	if err != nil {
 		jobpath, err = SearchJob(jxz)
@@ -234,7 +242,7 @@ func FetchTxtpath(jobpath string) (int, []string, error) {
 
 func FetchTail(path string) (string, error) {
 	if rvst {
-		return "",nil
+		return "", nil
 	}
 	if strings.HasSuffix(path, ".xls") {
 		return ParseXls(path)
@@ -251,11 +259,10 @@ func CombineAll(allbody *AllBody, tail *string) *TxtJson {
 	// return &emailtxt
 	var txtjon TxtJson
 	for _, v := range *allbody {
-		txtjon.TxtBodies = append(txtjon.TxtBodies, TxtBody{TxtCount:v.Count, TxtBody: v.Content + "\n" + *tail })
+		txtjon.TxtBodies = append(txtjon.TxtBodies, TxtBody{TxtCount: v.Count, TxtBody: v.Content + "\n" + *tail})
 	}
 	return &txtjon
 }
-
 
 func PHQtitle(jobpath string) (string, error) {
 	if rvst {
