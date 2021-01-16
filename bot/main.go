@@ -94,6 +94,8 @@ func Run(queryJob string, rv bool) string {
 	case 0:
 		allbody, err = ConstructPDFName(DFjobpath)
 		if err != nil {
+			cmd := exec.Command("open", DFjobpath)
+			cmd.Run()
 			return err.Error()
 		}
 
