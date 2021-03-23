@@ -149,7 +149,7 @@ function rvstTitle(count){
     var str=`
 <span>
 <span>The following </span>
-<span name="updateReason1" style="color: rgb(255, 0, 0);">revised file </span>
+<span name="updateReason1" onclick="removeRevisedText(this)" style="color: rgb(255, 0, 0);">revised file </span>
 <span>is for your </span>
 <span name="updateReason2" style="color: rgb(255, 0, 0);">approval:</span>
 <br>
@@ -163,7 +163,7 @@ function rvstTitle(count){
 <span>
 <span>The following </span>
 <span style="color: rgb(255, 0, 0);">Count </span>
-<span name="updateReason1" style="color: rgb(255, 0, 0);">revised files </span>
+<span name="updateReason1" onclick="removeRevisedTexts(this)" style="color: rgb(255, 0, 0);">revised files </span>
 <span>are for your </span>
 <span name="updateReason2" style="color: rgb(255, 0, 0);">approval:</span>
 <br>
@@ -177,11 +177,19 @@ return str
 
 }
 
+function removeRevisedText(obj){
+	obj.innerText = "file"
+}
+
+function removeRevisedTexts(obj){
+	obj.innerText = "files"
+}
+
 function ProofTitle(count) {
   if (count == 1) {
     var Str=`
 <span>
-<span name="welcome" onclick="changeProofer(this)">Hi Ella,</span>
+<span name="welcome" onclick="changeProofer(this)">Hi Jason,</span>
 <br>
 <br>
 <span>The following </span>
@@ -196,7 +204,7 @@ return Str
   }else{
     var Str = `
 <span>
-<span name="welcome" onclick="changeProofer(this)">Hi Ella,</span>
+<span name="welcome" onclick="changeProofer(this)">Hi Jason,</span>
 <br>
 <br>
 <span>The following </span>
@@ -218,7 +226,7 @@ function changeProofer(obj){
 	var name = obj.innerText
 
 	switch (name){
-		case "Hi Ella,":
+		case "Hi Jason,":
 		obj.innerText = "Hi Sam,"
 		break;
 	}
