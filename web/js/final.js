@@ -177,6 +177,9 @@ function TrackBarUpdate(){
 		var objtxt = document.getElementById("sub" + trackObj[i].Token);
 		var barobj = document.getElementById(trackObj[i].Token);
 		var percentage = (100*trackObj[i].CompressedSize / trackObj[i].TotalFileSize).toFixed(0);
+
+		DynamicTitle(trackObj[i].Jobcode, percentage);
+
 		if (barobj == null) {
 			BuildBars(trackObj[i], percentage);
 			if (percentage == 100){
@@ -215,6 +218,12 @@ function ItemStatusInfo(itemObj){
 	return txt
 }
 
+function DynamicTitle(jobcode, percentage){
+	document.title = percentage + "% - " + "Zipping..."
+	if (percentage == 100) {
+		document.title = "Final artwork"
+	}
+}
 
 function onchangeSupplier(onchangeText){
 	var item = document.getElementById("supplierLine");
