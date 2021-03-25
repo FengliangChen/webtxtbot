@@ -178,11 +178,11 @@ return str
 }
 
 function removeRevisedText(obj){
-	obj.innerText = "file"
+	obj.innerText = "file "
 }
 
 function removeRevisedTexts(obj){
-	obj.innerText = "files"
+	obj.innerText = "files "
 }
 
 function ProofTitle(count) {
