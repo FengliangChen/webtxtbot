@@ -178,7 +178,7 @@ func SearchFile(path, suf string) (int, []string, error) {
 	var found []string
 	for _, file := range files {
 		if !file.IsDir() && file.Name()[0] != '.' {
-			if strings.HasSuffix(file.Name(), suf) {
+			if strings.HasSuffix(strings.ToLower(file.Name()), suf) {
 				found = append(found, filepath.Join(path, file.Name()))
 				continue
 			}

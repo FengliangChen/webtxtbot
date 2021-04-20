@@ -11,8 +11,8 @@ import (
 )
 
 type Body struct {
-	Count int
-	Content  string
+	Count   int
+	Content string
 }
 
 type AllBody []*Body
@@ -84,11 +84,9 @@ func FetchBody(pathes []string, bodylen int) (*AllBody, error) {
 func ConstructPDFName(DFjobpath string) (*AllBody, error) {
 	count, files, err := SearchFile(DFjobpath, ".pdf")
 	if err != nil {
-		count, files, err = SearchFile(DFjobpath, ".PDF") /* not consider if ".PDF" and ".pdf" formats both exist. It rarely happens. */
-	}
-	if err != nil {
 		return nil, err
 	}
+
 	var filenames string
 	for _, value := range files {
 		value = filepath.Base(value)
@@ -124,11 +122,18 @@ func TitleSplit(path string) (string, string, string) {
 		before_sep := brand
 		for _, separator := range separators {
 			splitedbrand := strings.Split(brand, separator)
-			if len(splitedbrand) == 2 { brand = splitedbrand[0] ; break}
-		} 
+			if len(splitedbrand) == 2 {
+				brand = splitedbrand[0]
+				break
+			}
+		}
 
-		if before_sep == brand { brand = "X" }
-	} else { brand = "X" }
+		if before_sep == brand {
+			brand = "X"
+		}
+	} else {
+		brand = "X"
+	}
 
 	return brand, tcode, tjob
 }
