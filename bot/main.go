@@ -23,10 +23,10 @@ const (
 )
 
 var (
-	now       = time.Now()
-	today     = now.Format("0102")
-	yesterday = now.AddDate(0, 0, -1).Format("0102")
-	month     = now.Format("200601")
+	// now       = time.Now()
+	// today     = now.Format("200601/0102")
+	// yesterday = now.AddDate(0, 0, -1).Format("200601/0102")
+	//month     = now.Format("200601")
 	re        *regexp.Regexp
 	job       string
 	brand     string
@@ -46,12 +46,12 @@ type TxtBody struct {
 	TxtBody  string
 }
 
-func ReNewTime() {
-	now = time.Now()
-	today = now.Format("0102")
-	yesterday = now.AddDate(0, 0, -1).Format("0102")
-	month = now.Format("200601")
-}
+// func ReNewTime() {
+// 	now = time.Now()
+// 	today = now.Format("0102")
+// 	yesterday = now.AddDate(0, 0, -1).Format("0102")
+// 	//month = now.Format("200601")
+// }
 
 func Run(queryJob string, rv bool) string {
 	rvst = rv //cancle some process.
@@ -68,7 +68,7 @@ func Run(queryJob string, rv bool) string {
 
 	re = regexp.MustCompile(job)
 
-	ReNewTime() // fix time if time changed.
+	//ReNewTime() // fix time if time changed.
 
 	DFjobpath, err := FetchJobPath()
 	if err != nil {
@@ -192,8 +192,12 @@ func SearchFile(path, suf string) (int, []string, error) {
 }
 
 func FetchJobPath() (string, error) {
-	tpath := filepath.Join(dfpath, month, today)
-	ypath := filepath.Join(dfpath, month, yesterday)
+	now := time.Now()
+	today := now.Format("200601/0102")
+	yesterday := now.AddDate(0, 0, -1).Format("200601/0102")
+
+	tpath := filepath.Join(dfpath, today)
+	ypath := filepath.Join(dfpath, yesterday)
 	tStatus := Exists(tpath)
 	yStatus := Exists(ypath)
 
