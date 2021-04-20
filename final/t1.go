@@ -126,11 +126,11 @@ func (r *Reader) N() int64 {
 
 func (p *PossibleJobpathRange) MakePath() {
     now := time.Now()
-    today := now.Format("0102")
-    yesterday := now.AddDate(0, 0, -1).Format("0102")
-    month := now.Format("200601")
-    p.today = filepath.Join(dfpath, month, today)
-    p.yesterday = filepath.Join(dfpath, month, yesterday)
+    today := now.Format("200601/0102")
+    yesterday := now.AddDate(0, 0, -1).Format("200601/0102")
+
+    p.today = filepath.Join(dfpath, today)
+    p.yesterday = filepath.Join(dfpath, yesterday)
 }
 
 func GetToday() string {
