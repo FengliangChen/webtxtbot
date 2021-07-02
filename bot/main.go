@@ -72,7 +72,6 @@ func Run(queryJob string, rv bool) string {
 
 	DFjobpath, err := FetchJobPath()
 	if err != nil {
-		log.Println(err)
 		return job + " ---> Please check today and yesterday, if job folder is existed!"
 	}
 
@@ -83,7 +82,6 @@ func Run(queryJob string, rv bool) string {
 
 	txtCount, txtFilePath, err := FetchTxtpath(DFjobpath)
 	if err != nil {
-		log.Println(err)
 		if err.Error() == "nofile of .txt" {
 			log.Println("No txt file in job folder, creating base on existing pdf files.")
 		}
@@ -116,6 +114,7 @@ func Run(queryJob string, rv bool) string {
 	PHQtitle, err := PHQtitle(DFjobpath)
 	if err != nil {
 		log.Println(err)
+		return err.Error()
 	}
 	// *emailTxt = PHQtitle + "\n\n" + *emailTxt
 	emailTxtJson.PHQ = PHQtitle
@@ -238,12 +237,41 @@ func FetchPFpath() (string, error) {
 
 }
 
+//remove rvst from FetchPFpath(), ToFaris() need to use. bool rvst trouble.
+func FetchPFpathRecord() (string, error) {
+	jobpath, err := SearchJob(wks)
+	if err != nil {
+		jobpath, err = SearchJob(jxz)
+	}
+	if err != nil {
+		return "", errors.New("PF job folder may not existed, please check!")
+	}
+	_, PFpath, err := SearchFile(jobpath, ".xls")
+	if err != nil {
+		_, PFpath, err = SearchFile(jobpath, ".xlsx")
+	}
+	if err != nil {
+		return "", errors.New("PF sheet file is not located, please check!")
+	}
+	return PFpath[0], nil
+
+}
+
 func FetchTxtpath(jobpath string) (int, []string, error) {
 	count, txtpath, err := SearchFile(jobpath, ".txt")
 	if err != nil {
 		return 0, nil, err
 	}
 	return count, txtpath, nil
+}
+
+//remove rvst from FetchTail(), ToFaris() need to use. bool rvst trouble.
+func FetchTailRecord(path string) (string, error) {
+	if strings.HasSuffix(path, ".xls") {
+		return ParseXls(path)
+	} else {
+		return ParseXlsx(path)
+	}
 }
 
 func FetchTail(path string) (string, error) {
@@ -301,4 +329,85 @@ func PHQtitle(jobpath string) (string, error) {
 	tbrand, tcode, tjob := TitleSplit(jobpath)
 
 	return clientMap[tbrand] + " / " + clientMap[tcode] + " / " + tjob, nil
+}
+
+//PHQtitleRecord rvst from PHQtitle(), ToFaris() need to use. bool rvst trouble.
+func PHQtitleRecord(jobpath string) (string, error) {
+
+	buf := make([]byte, DEFAULTSIZE*1024)
+	file, err := os.Open(jsonPath)
+	if err != nil {
+		log.Println("open json err")
+		return "", err
+	}
+	defer file.Close()
+	n, _ := file.Read(buf)
+	if n == DEFAULTSIZE*1024 {
+		return "", errors.New("MaxSize")
+	}
+
+	client := []map[string]string{}
+	clientMap := map[string]string{}
+	err = json.Unmarshal(buf[0:n], &client)
+	if err != nil {
+		return "", errors.New("jsonMarshalError")
+	}
+
+	for _, clientdata := range client {
+		for code, fullname := range clientdata {
+			clientMap[code] = fullname
+		}
+	}
+	tbrand, tcode, tjob := TitleSplit(jobpath)
+
+	return clientMap[tbrand] + " / " + clientMap[tcode] + " / " + tjob, nil
+}
+
+func ToFaris(queryJob string) string {
+	if !TestConnect() {
+		return "Connection Errors, Please check if the server is connected at: " + dfpath
+	}
+
+	if len(queryJob) != 6 {
+		return "Please input 6 digits"
+	}
+
+	job = queryJob
+
+	job = strings.ToUpper(job)
+
+	re = regexp.MustCompile(job)
+
+	DFjobpath, err := FetchJobPath()
+	if err != nil {
+		log.Println(err)
+		return job + " ---> Please check today and yesterday, if job folder is existed!"
+	}
+
+	PFpath, err := FetchPFpathRecord()
+	if err != nil {
+		return err.Error()
+	}
+
+	tail, err := FetchTailRecord(PFpath)
+	if err != nil {
+		return err.Error()
+	}
+
+	var emailTxtJson TxtJson
+	emailTxtJson.TxtBodies = append(emailTxtJson.TxtBodies, TxtBody{TxtCount: 0, TxtBody: tail})
+
+	PHQtitle, err := PHQtitleRecord(DFjobpath)
+	if err != nil {
+		return err.Error()
+	}
+	// *emailTxt = PHQtitle + "\n\n" + *emailTxt
+	emailTxtJson.PHQ = PHQtitle
+
+	b, err := json.Marshal(emailTxtJson)
+	if err != nil {
+		return err.Error()
+	}
+	emailTxt := string(b)
+	return emailTxt
 }

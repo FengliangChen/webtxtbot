@@ -1,6 +1,9 @@
 package main
 
 import (
+    "./bot"
+    "./final"
+    "./supcode"
     "bytes"
     "errors"
     "fmt"
@@ -8,9 +11,6 @@ import (
     "io"
     "net/http"
     "runtime"
-    "./bot"
-    "./final"
-    "./supcode"
 )
 
 // 端口
@@ -52,13 +52,12 @@ func main() {
     http.HandleFunc("/query", Query)
     http.HandleFunc("/compress", Compress)
     http.HandleFunc("/track", Track)
+    http.HandleFunc("/record", Record)
+    http.HandleFunc("/autoemail", AutoEmail)
 
     http.HandleFunc("/searchcode", SearchHomePage)
     http.HandleFunc("/updatesupplier", UpdateSupplier)
     http.HandleFunc("/suppliersearch", SupplierSearch)
-
-
-    
 
     // 开始服务
     err := http.ListenAndServe(":"+HTTP_PORT, nil)
@@ -107,17 +106,15 @@ func DraftArtworkText(res http.ResponseWriter, req *http.Request) {
     rvsts, ok := req.URL.Query()["rvst"]
     if !ok || len(rvsts[0]) < 1 {
         rvst = false
-    }else{
+    } else {
         rvst = true
     }
-    
+
     job := string(key)
     finaltxt := txtbot.Run(job, rvst)
     io.WriteString(res, finaltxt)
     return
 }
-
-
 
 func FinalHomePage(res http.ResponseWriter, req *http.Request) {
     t, err := template.ParseFiles("web/finalartwork.html")
@@ -133,7 +130,6 @@ func FinalHomePage(res http.ResponseWriter, req *http.Request) {
     return
 }
 
-
 func Query(res http.ResponseWriter, req *http.Request) {
     keys, ok := req.URL.Query()["j"]
     if !ok || len(keys[0]) < 1 {
@@ -148,7 +144,7 @@ func Query(res http.ResponseWriter, req *http.Request) {
         fmt.Println(err)
     }
     io.WriteString(res, jstring)
-    if len(job.Jobpath) != 0{
+    if len(job.Jobpath) != 0 {
         job.OpenFolder()
     }
     return
@@ -174,8 +170,8 @@ func Compress(res http.ResponseWriter, req *http.Request) {
         io.WriteString(res, "已经提交压缩过了。")
         return
     }
-    go func(){
-      finalartwork.ProcessZip(job)
+    go func() {
+        finalartwork.ProcessZip(job)
     }()
     io.WriteString(res, "压缩中。。。")
     return
@@ -183,13 +179,12 @@ func Compress(res http.ResponseWriter, req *http.Request) {
 
 func Track(res http.ResponseWriter, req *http.Request) {
     jstring, err := broker.TrackResponse()
-    if err != nil { 
+    if err != nil {
         fmt.Println(err)
     }
     io.WriteString(res, jstring)
     return
 }
-
 
 func SearchHomePage(res http.ResponseWriter, req *http.Request) {
     t, err := template.ParseFiles("web/searchcode.html")
@@ -221,26 +216,25 @@ func UpdateSupplier(res http.ResponseWriter, req *http.Request) {
         err := searchcode.JsonSave()
         if err != nil {
             responseTxt = err.Error()
-        }else{
+        } else {
             responseTxt = "已删除" + supCode
         }
 
-    }else{
+    } else {
         sup = key2[0]
 
         searchcode.JsonAdd(supCode, sup)
         err := searchcode.JsonSave()
         if err != nil {
             responseTxt = err.Error()
-        }else{
-            responseTxt =  supCode+ "已经更新为" + sup
+        } else {
+            responseTxt = supCode + "已经更新为" + sup
         }
 
     }
     io.WriteString(res, responseTxt)
     return
 }
-
 
 func SupplierSearch(res http.ResponseWriter, req *http.Request) {
     keys, ok := req.URL.Query()["c"]
@@ -256,8 +250,6 @@ func SupplierSearch(res http.ResponseWriter, req *http.Request) {
         return
     }
 
-     
-
     err := searchcode.Mapcheck()
     if err != nil {
         io.WriteString(res, err.Error())
@@ -268,3 +260,31 @@ func SupplierSearch(res http.ResponseWriter, req *http.Request) {
     return
 }
 
+func Record(res http.ResponseWriter, req *http.Request) {
+    keys, ok := req.URL.Query()["j"]
+    if !ok || len(keys[0]) < 1 {
+        fmt.Println("Url Param 'key' is missing")
+        return
+    }
+    key := keys[0]
+
+    jstring := txtbot.ToFaris(string(key))
+    // if err != nil {
+    //     fmt.Println(err)
+    // }
+    io.WriteString(res, jstring)
+    return
+}
+
+func AutoEmail(res http.ResponseWriter, req *http.Request) {
+    if err := req.ParseForm(); err != nil {
+        fmt.Fprintf(res, "ParseForm err: %v", err)
+        return
+    }
+
+    title := req.FormValue("title")
+    content := req.FormValue("content")
+    finalartwork.MakeEmail(title, content)
+    return
+
+}

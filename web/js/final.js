@@ -1,5 +1,6 @@
 var finalartworkObj;
-var previousInput
+var previousInput;
+var finalRecordObj;
 
 function finalProcessByKey(event) {
 	var x = event.key;
@@ -45,6 +46,7 @@ function FinalArtwork(){
 			}
 			FinalBodyOutput()
 			CompressOptionBuild()
+			autoEmailButton()
 		}
 	}
 
@@ -328,4 +330,125 @@ function filesPlural(txt){
 		}
 	}
 	return false
+}
+
+function FinalRecord(){
+	var xmlhttp;
+	xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var txt = xmlhttp.responseText
+			try {
+				finalRecordObj = JSON.parse(txt);
+			}
+			catch(err) {
+				var element=document.getElementById("toRecordEmail");
+				var para = document.createElement("p")
+				para.innerText = xmlhttp.responseText;
+				element.appendChild(para)
+				return
+			}
+			FinalRecordOutput()
+		}
+	}
+	var job = document.getElementById("finalArtworkInput").value;
+	xmlhttp.open("GET","/record?j="+job,true);
+	xmlhttp.send();
+
+}
+
+function FinalRecordOutput(){
+	if (finalartworkObj == null){
+		return
+	}
+	ClearContent("toRecordEmail")
+
+	var element=document.getElementById("toRecordEmail");
+	var lineBreak = document.createElement("br");
+
+
+	var emailHeader = document.createElement("p");
+	emailHeader.innerText = "Files For Record WMT Canada / " + finalRecordObj.PHQ;
+	emailHeader.setAttribute("id", "EmailHeadertxt");
+	emailHeader.setAttribute("contenteditable", "true")
+	element.appendChild(emailHeader)
+	element.appendChild(lineBreak)
+	element.appendChild(lineBreak.cloneNode())
+
+	var emailBoby = document.createElement("p");
+
+	var outPutTxt = finalartworkObj.Body;
+	if (outPutTxt.length === 0){
+		emailBoby.innerText = finalartworkObj.Error;
+		element.appendChild(emailBoby);
+		return
+	}
+
+	emailBoby.innerText = helloFaris + "\n" +outPutTxt + "\n"+ finalRecordObj.TxtBodies[0].TxtBody;
+	emailBoby.setAttribute("id", "EmailBody");
+	emailBoby.setAttribute("contenteditable", "true");
+	element.appendChild(emailBoby);
+
+	element.appendChild(lineBreak);
+
+	var btn = document.createElement("button");
+	btn.innerText = "autoEmail"
+	btn.setAttribute('onclick', "autoEmail()");
+	element.appendChild(btn);
+
+}
+
+var helloFaris = `
+Hi Faris,
+
+We’ve released final files to supplier and attached files are for your record:
+`
+
+function autoEmail(){
+	var ElementEmailHeader=document.getElementById("EmailHeadertxt");
+	var ElementEmailContent=document.getElementById("EmailBody");
+
+	var EmailHeader = ElementEmailHeader.innerText;
+	var EmailContent = ElementEmailContent.innerText;
+
+	var URL_EmailHeaer = encodeURIComponent(EmailHeader);
+	var URL_EmailContent = encodeURIComponent(EmailContent);
+
+	var params = "title="+ URL_EmailHeaer + "&" + "content=" + URL_EmailContent;
+
+	var xmlhttp;
+	xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function(){
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var txt = xmlhttp.responseText
+			try {
+				// finalRecordObj = JSON.parse(txt);
+				//console.log(txt)
+			}
+			catch(err) {
+				// var element=document.getElementById("toRecordEmail");
+				// var para = document.createElement("p")
+				// para.innerText = xmlhttp.responseText;
+				// element.appendChild(para)
+				return
+			}
+			// FinalRecordOutput()
+			//console.log("test")
+		}
+	}
+	// var job = document.getElementById("finalArtworkInput").value;
+	xmlhttp.open("POST","/autoemail",true);
+	xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	xmlhttp.send(params);
+}
+
+function autoEmailButton(){
+	ClearContent("toRecordEmail")
+	var element=document.getElementById("toRecordEmail");
+	var btn = document.createElement("button");
+	btn.innerText = "autoRecord";
+	btn.setAttribute('onclick', "FinalRecord()");
+	element.appendChild(btn);
 }
