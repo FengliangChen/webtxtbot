@@ -24,11 +24,11 @@ func ParseXls(path string) (string, error) {
 func ParseXlsx(path string) (string, error) {
 	if xlFile, err := xlsx.OpenFile(path); err == nil {
 		firstSheet := xlFile.Sheets[0]
-		brandCell, _ := firstSheet.Cell(2, 1)
+		brandCell := firstSheet.Cell(2, 1)
 		brand = brandCell.Value
 		xlsContent := ""
 		for i := 4; i < 12; i++ {
-			tempCell, _ := firstSheet.Cell(i, 7)
+			tempCell := firstSheet.Cell(i, 7)
 			xlsContent = xlsContent + tempCell.Value + "\n"
 		}
 		return xlsContent, nil

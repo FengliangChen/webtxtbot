@@ -1,16 +1,16 @@
 package main
 
 import (
-    "./bot"
-    "./final"
-    "./supcode"
     "bytes"
     "errors"
+    "finalartwork"
     "fmt"
     "html/template"
     "io"
     "net/http"
     "runtime"
+    "searchcode"
+    "txtbot"
 )
 
 // 端口
