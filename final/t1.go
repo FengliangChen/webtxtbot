@@ -48,6 +48,7 @@ type JobInfo struct {
     CompressStatusCode         CompressionStatusCode
     SizeCounter                *SizeInfo
     BrokerStatusCode           int
+    Timeflag                   int
 }
 
 func GetToken() string {

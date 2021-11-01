@@ -139,7 +139,7 @@ func Query(res http.ResponseWriter, req *http.Request) {
     key := keys[0]
 
     job := finalartwork.ProcessJob(string(key))
-    jstring, err := finalartwork.FirstStageResponse(job, &broker)
+    jstring, err := finalartwork.FirstStageResponse(job, broker)
     if err != nil {
         fmt.Println(err)
     }
