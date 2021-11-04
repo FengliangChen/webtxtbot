@@ -71,6 +71,11 @@
   background-color: #555;
 }
 
+#slideFormEasy {
+  top: 200px;
+  background-color: #deb887;
+}
+
 #footer {
   position: relative;
   top:200px;

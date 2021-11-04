@@ -1,6 +1,7 @@
 package main
 
 import (
+    "autofill"
     "bytes"
     "errors"
     "finalartwork"
@@ -24,10 +25,12 @@ const (
     CSS_CLIENT_PATH   = "/css/"
     DART_CLIENT_PATH  = "/js/"
     IMAGE_CLIENT_PATH = "/image/"
+    FONT_CLIENT_PATH  = "/fonts/"
 
     CSS_SVR_PATH   = "web"
     DART_SVR_PATH  = "web"
     IMAGE_SVR_PATH = "web"
+    FONT_SVR_PATH  = "web"
 )
 
 func init() {
@@ -43,6 +46,7 @@ func main() {
     http.Handle(CSS_CLIENT_PATH, http.FileServer(http.Dir(CSS_SVR_PATH)))
     http.Handle(DART_CLIENT_PATH, http.FileServer(http.Dir(DART_SVR_PATH)))
     http.Handle(IMAGE_CLIENT_PATH, http.FileServer(http.Dir(IMAGE_SVR_PATH)))
+    http.Handle(FONT_CLIENT_PATH, http.FileServer(http.Dir(FONT_SVR_PATH)))
 
     // 网址与处理逻辑对应起来
     http.HandleFunc("/", HomePage)
@@ -58,6 +62,11 @@ func main() {
     http.HandleFunc("/searchcode", SearchHomePage)
     http.HandleFunc("/updatesupplier", UpdateSupplier)
     http.HandleFunc("/suppliersearch", SupplierSearch)
+
+    http.HandleFunc("/formeasy", FormEasy)
+    http.HandleFunc("/job/info", jobinfo)
+    http.HandleFunc("/job/seasonmap", GetSeasonMap)
+    http.HandleFunc("/job/buyerlist", GetBuyerList)
 
     // 开始服务
     err := http.ListenAndServe(":"+HTTP_PORT, nil)
@@ -286,5 +295,62 @@ func AutoEmail(res http.ResponseWriter, req *http.Request) {
     content := req.FormValue("content")
     finalartwork.MakeEmail(title, content)
     return
+
+}
+
+func FormEasy(res http.ResponseWriter, req *http.Request) {
+    t, err := template.ParseFiles("web/formeasy.html")
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    err = WriteTemplateToHttpResponse(res, t)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    return
+}
+
+func jobinfo(res http.ResponseWriter, req *http.Request) {
+    err := req.ParseForm()
+    if err != nil {
+        fmt.Println(err.Error())
+    }
+    formData := map[string]string{}
+
+    for i, v := range req.PostForm {
+        formData[i] = v[0]
+    }
+
+    job := autofill.NewJob(formData)
+    job.Init()
+    err = job.MakeJob()
+    if err != nil {
+        io.WriteString(res, err.Error())
+        return
+
+    }
+    io.WriteString(res, "finished")
+    return
+}
+
+func GetSeasonMap(res http.ResponseWriter, req *http.Request) {
+    jstring, err := autofill.GetSeasonalMap_json()
+    if err != nil {
+        io.WriteString(res, err.Error())
+        return
+    }
+    io.WriteString(res, jstring)
+
+}
+
+func GetBuyerList(res http.ResponseWriter, req *http.Request) {
+    jstring, err := autofill.GetBuyerList_json()
+    if err != nil {
+        io.WriteString(res, err.Error())
+        return
+    }
+    io.WriteString(res, jstring)
 
 }
