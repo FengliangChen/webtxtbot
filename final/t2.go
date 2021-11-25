@@ -4,6 +4,7 @@ import (
   "encoding/json"
   "errors"
   "fmt"
+  "runtime"
   "time"
 )
 
@@ -160,6 +161,7 @@ func (p *Broker) CleanCompletedJob(s int) {
       if p[i].CompressStatusCode == COMPRESSIONCOMPLETED {
         if p[i].Timeflag > s {
           p[i] = nil
+          runtime.GC() // compromise to release the resource(zip file) immediately so that the file folder can be moved to other directory
         }
 
       }
