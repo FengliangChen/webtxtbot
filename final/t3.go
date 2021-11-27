@@ -15,26 +15,30 @@ import (
     "os/exec"
 )
 
-var baseScript = `
-osascript <<EOF
-set theRecipients to {{name:"Faris", email:"faris.abukwiek@walmart.com"}}
-set ccRecpients to {{name:"service", email:"service@benchmarkdesign.org"}, {name:"marika", email:"marika@benchmarkdesign.org"},{name:"chris", email:"chris@benchmarkdesign.org"}}
-tell application "Mail"
-    set theMessage to make new outgoing message with properties {subject:"$etitle", content:"$econtent", visible:true}
-    
-    repeat with theRecipient in theRecipients
-        tell theMessage
-            make new to recipient at end of to recipients with properties {name:name of theRecipient, address:email of theRecipient}
-        end tell
-    end repeat
-    repeat with ccRecipient in ccRecpients
-        tell theMessage
-            make new cc recipient at end of cc recipients with properties {name:name of ccRecipient, address:email of ccRecipient}
-        end tell
-    end repeat
-end tell
-EOF
-`
+// var baseScript = `
+// osascript <<EOF
+// set theRecipients to {{name:"Faris", email:"faris.abukwiek@walmart.com"}}
+// set ccRecpients to {{name:"service", email:"service@benchmarkdesign.org"}, {name:"marika", email:"marika@benchmarkdesign.org"},{name:"chris", email:"chris@benchmarkdesign.org"}}
+// tell application "Mail"
+//     set theMessage to make new outgoing message with properties {subject:"$etitle", content:"$econtent", visible:true}
+
+//     repeat with theRecipient in theRecipients
+//         tell theMessage
+//             make new to recipient at end of to recipients with properties {name:name of theRecipient, address:email of theRecipient}
+//         end tell
+//     end repeat
+//     repeat with ccRecipient in ccRecpients
+//         tell theMessage
+//             make new cc recipient at end of cc recipients with properties {name:name of ccRecipient, address:email of ccRecipient}
+//         end tell
+//     end repeat
+// end tell
+// EOF
+// `
+
+const (
+    basescriptPath = "email.sh"
+)
 
 func MakeEmail(title string, content string) {
 
@@ -79,6 +83,19 @@ func genScript(title string, content string) string {
     firstLine := "etitle=" + "\"" + title + "\"" + "\n"
     secondLine := "econtent=" + "\"" + content + "\"" + "\n"
 
-    script := firstLine + secondLine + baseScript
+    script := firstLine + secondLine + ReadBasescript()
     return script
+}
+
+func ReadBasescript() string {
+    file, err := os.Open(basescriptPath)
+    if err != nil {
+        log.Fatal(err)
+    }
+    b, err := ioutil.ReadAll(file)
+    if err != nil {
+        log.Fatal(err)
+    }
+    return string(b)
+
 }
