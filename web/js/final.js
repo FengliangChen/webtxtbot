@@ -1,6 +1,7 @@
 var finalartworkObj;
 var previousInput;
 var finalRecordObj;
+var finishCompress = false;
 
 function finalProcessByKey(event) {
 	var x = event.key;
@@ -205,8 +206,12 @@ function UpdateZipBtnTxt(itemID){
 	if (element == null){
 		return
 	}
+	if (finishCompress == true){
+		return
+	}
 	element.innerText = "已完成！"
 	alert("压缩文件完成！")
+	finishCompress = true;
 }
 
 
