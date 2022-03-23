@@ -28,6 +28,7 @@ function FinalArtwork(){
 	ClearContent("mainFinal")
 	ClearContent("compressOption")
 	ClearContent("processStateBar")
+	finishCompress = false
 
 	var xmlhttp;
 	xmlhttp=new XMLHttpRequest();
