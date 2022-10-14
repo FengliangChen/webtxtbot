@@ -3,9 +3,11 @@ package txtbot
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -116,6 +118,13 @@ func TitleSplit(path string) (string, string, string) {
 	}
 
 	var separators = [...]string{"/", "-", "／"}
+
+	filterBrand, err := FetchBrandName(brand)
+	if err == nil {
+		brand = filterBrand
+
+	}
+
 	if len(brand) > 4 {
 		brand = strings.ToUpper(brand)
 		brand = strings.TrimSpace(brand)
@@ -136,4 +145,37 @@ func TitleSplit(path string) (string, string, string) {
 	}
 
 	return brand, tcode, tjob
+}
+
+func FetchBrandName(brand string) (string, error) {
+	brand = strings.ToUpper(brand)
+	var separators = [...]string{"/", "-", "／"}
+	var re *regexp.Regexp
+	var separator = ""
+
+	for _, sep := range separators {
+		if strings.Contains(brand, sep) {
+			separator = sep
+			break
+		}
+	}
+
+	switch separator {
+	case "/":
+		re = regexp.MustCompile(`[A-Z]{2,4}/[A-Za-z]{2,}`)
+	case "-":
+		re = regexp.MustCompile(`[A-Z]{2,4}-[A-Za-z]{2,}`)
+	case "／":
+		re = regexp.MustCompile(`[A-Z]{2,4}／[A-Za-z]{2,}`)
+	default:
+		return "", errors.New("no separator match.")
+	}
+
+	match := re.Find([]byte(brand))
+	if match == nil {
+		return "", errors.New("can't match regexp pattern.")
+	} else {
+		return string(match), nil
+	}
+
 }
